@@ -4,7 +4,7 @@ import { Navigate } from 'react-router';
 // Lazy load all components for better performance
 const NotFound = lazy(() => import('./pages/Notfound'));
 const HomePage = lazy(() => import('./pages/home/Index'));
-const UserID = lazy(() => import('./pages/userID'));
+const UserID = lazy(() => import('./pages/UserID'));
 const Users = lazy(() => import('./pages/Users'));
 
 export const routes = [
