@@ -76,7 +76,12 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   const handleLogin = () =>{
-    navigate("/student")
+    navigate("/user")
+    setIsMobileMenuOpen(false)
+  }
+
+  const handleUsersClick = () => {
+    navigate("/users")
     setIsMobileMenuOpen(false)
   }
 
@@ -199,12 +204,23 @@ export default function Navbar() {
                             <a
                               key={index}
                               href="#"
-                              className="block px-4 py-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                               onClick={() => handleLinkClick(item)}
                             >
                               {item}
                             </a>
                           ))}
+                          <button
+                            onClick={handleUsersClick}
+                            className="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors mr-2"
+                          >
+                            Users
+                          </button>
+                          <button
+                            onClick={handleLogin}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+                          >
+                            Login
+                          </button>
                         </div>
                       )}
                     </div>
