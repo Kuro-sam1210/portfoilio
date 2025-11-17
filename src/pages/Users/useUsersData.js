@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import adminApi from '../../api/admin';
 import { toast } from 'sonner';
 
 const useUsersData = () => {
@@ -100,75 +99,52 @@ const useUsersData = () => {
     setUsers((prev) => prev.map((u) => (u.id === payload.id ? { ...u, ...payload } : u)));
   };
 
-  // Fetch ALL users from API (all pages)
+  // Load dummy users
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        let allUsers = [];
-        let page = 1;
-        let hasMore = true;
-
-        // Fetch all pages
-        while (hasMore) {
-          const res = await adminApi.getAllUsers({ page, limit: 100 });
-          
-          let list = [];
-          let paginationInfo = null;
-
-          // Normalize response shapes
-          if (Array.isArray(res)) {
-            list = res;
-          } else if (res?.data) {
-            // Check for pagination info
-            if (res.pagination) {
-              paginationInfo = res.pagination;
-            } else if (res.data?.pagination) {
-              paginationInfo = res.data.pagination;
-            }
-
-            // Extract user list
-            if (Array.isArray(res.data)) {
-              list = res.data;
-            } else if (Array.isArray(res.data?.data)) {
-              list = res.data.data;
-            } else if (Array.isArray(res.data?.users)) {
-              list = res.data.users;
-            }
-          } else if (Array.isArray(res?.users)) {
-            list = res.users;
+        // Dummy users data
+        const dummyUsers = [
+          {
+            userId: '1',
+            username: 'john_doe',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            subscriptionPlan: 'Premium',
+            balance: 150,
+            verified: true,
+            dateJoined: new Date(Date.now() - 2592000000).toISOString(), // 30 days ago
+            isDisabled: false
+          },
+          {
+            userId: '2',
+            username: 'jane_smith',
+            firstName: 'Jane',
+            lastName: 'Smith',
+            email: 'jane@example.com',
+            subscriptionPlan: 'Basic',
+            balance: 50,
+            verified: false,
+            dateJoined: new Date(Date.now() - 5184000000).toISOString(), // 60 days ago
+            isDisabled: false
+          },
+          {
+            userId: '3',
+            username: 'bob_wilson',
+            firstName: 'Bob',
+            lastName: 'Wilson',
+            email: 'bob@example.com',
+            subscriptionPlan: 'Free',
+            balance: 0,
+            verified: true,
+            dateJoined: new Date(Date.now() - 7776000000).toISOString(), // 90 days ago
+            isDisabled: true
           }
+        ];
 
-          if (list.length > 0) {
-            allUsers = allUsers.concat(list);
-            
-            // Check if there are more pages
-            if (paginationInfo) {
-              const totalPages = paginationInfo.totalPages;
-              if (totalPages && page >= totalPages) {
-                hasMore = false;
-              } else {
-                page++;
-              }
-            } else if (list.length < 100) {
-              // If we got less than the limit, assume no more pages
-              hasMore = false;
-            } else {
-              page++;
-            }
-          } else {
-            hasMore = false;
-          }
-
-          // Safety check to prevent infinite loop
-          if (page > 500) {
-            console.warn('Reached page limit of 500, stopping fetch');
-            break;
-          }
-        }
-
-        console.log(`[users] Fetched ${allUsers.length} total users from ${page - 1} pages`);
-        setUsers(allUsers.length ? allUsers.map(toShape) : []);
+        setUsers(dummyUsers.map(toShape));
 
       } catch (err) {
         console.error('[users] fetch error', err);
@@ -198,14 +174,8 @@ const useUsersData = () => {
   const suspendUser = async (user) => {
     setActionLoading(true);
     try {
-      const res = await adminApi.disableUser(user.id);
-      // try to extract updated user from response
-      const updated = res?.user || res?.data || res?.updatedUser || res;
-      if (updated) {
-        applyUpdate(toShape(updated));
-      } else {
-        applyUpdate({ id: user.id, isDisabled: true, subscriptionPlan: 'Suspended' });
-      }
+      // Simulate suspend
+      applyUpdate({ id: user.id, isDisabled: true, subscriptionPlan: 'Suspended' });
       toast.success('User suspended');
     } catch (err) {
       console.error('[users] suspend error', err);
@@ -238,7 +208,7 @@ const useUsersData = () => {
   const deleteUser = async (user) => {
     setActionLoading(true);
     try {
-      await adminApi.deleteUser(user.id);
+      // Simulate delete
       setUsers((prev) => prev.filter((u) => u.id !== user.id));
       toast.success('User deleted');
     } catch (err) {
@@ -252,13 +222,8 @@ const useUsersData = () => {
   const enableUser = async (user) => {
     setActionLoading(true);
     try {
-      const res = await adminApi.enableUser(user.id);
-      const updated = res?.user || res?.data || res?.updatedUser || res;
-      if (updated) {
-        applyUpdate(toShape(updated));
-      } else {
-        applyUpdate({ id: user.id, isDisabled: false, subscriptionPlan: user.subscriptionPlan || 'Free' });
-      }
+      // Simulate enable
+      applyUpdate({ id: user.id, isDisabled: false, subscriptionPlan: user.subscriptionPlan || 'Free' });
       toast.success('User enabled');
     } catch (err) {
       console.error('[users] enable error', err);
@@ -271,13 +236,8 @@ const useUsersData = () => {
   const verifyUser = async (user) => {
     setActionLoading(true);
     try {
-      const res = await adminApi.verifyUser(user.id);
-      const updated = res?.user || res?.data || res?.updatedUser || res;
-      if (updated) {
-        applyUpdate(toShape(updated));
-      } else {
-        applyUpdate({ id: user.id, verified: true });
-      }
+      // Simulate verify
+      applyUpdate({ id: user.id, verified: true });
       toast.success('User verified');
     } catch (err) {
       console.error('[users] verify error', err);
@@ -290,13 +250,8 @@ const useUsersData = () => {
   const unverifyUserHandler = async (user) => {
     setActionLoading(true);
     try {
-      const res = await adminApi.unverifyUser(user.id);
-      const updated = res?.user || res?.data || res?.updatedUser || res;
-      if (updated) {
-        applyUpdate(toShape(updated));
-      } else {
-        applyUpdate({ id: user.id, verified: false });
-      }
+      // Simulate unverify
+      applyUpdate({ id: user.id, verified: false });
       toast.success('User unverified');
     } catch (err) {
       console.error('[users] unverify error', err);

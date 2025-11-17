@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import adminApi from '../api/admin';
 import { toast } from 'sonner';
 import Modal from '../components/Modal';
 import UserGrowthChart from '../components/UserGrowthChart';
@@ -60,13 +59,34 @@ const Reports = () => {
     const fetchReports = async () => {
       setLoading(true);
       try {
-        const response = await adminApi.getDashboardReportsDaily();
-
-        if (response?.data && Array.isArray(response.data)) {
-          setReportsData(response.data);
-        } else {
-          setReportsData([]);
-        }
+        // Use dummy reports data
+        const dummyReports = [
+          {
+            date: new Date().toISOString().split('T')[0],
+            users: 25,
+            deposits: 15000,
+            withdrawals: 8500,
+            posts: 45,
+            affiliateBonuses: 1200
+          },
+          {
+            date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+            users: 18,
+            deposits: 12000,
+            withdrawals: 9200,
+            posts: 32,
+            affiliateBonuses: 950
+          },
+          {
+            date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
+            users: 22,
+            deposits: 18000,
+            withdrawals: 11000,
+            posts: 58,
+            affiliateBonuses: 1450
+          }
+        ];
+        setReportsData(dummyReports);
       } catch (err) {
         console.error('Failed to load reports:', err);
         toast.error('Failed to load reports data');
@@ -80,49 +100,27 @@ const Reports = () => {
   }, []);
 
   useEffect(() => {
-    // FIXED: Process user growth data based on your actual API response
-    console.log('🔄 Fetching user growth data...');
-    const fetchUserGrowth = async () => {
-      try {
-        // Calculate date range for user growth (last 30 days) - using UTC
-        const now = new Date();
-        const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-        const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30));
+    // Use dummy user growth data
+    console.log('🔄 Setting dummy user growth data...');
+    const now = new Date();
+    const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 30));
 
-        const userGrowthResponse = await adminApi.getUserGrowth({
-          startDate: startDate.toISOString().split('T')[0],
-          endDate: endDate.toISOString().split('T')[0]
-        });
-        console.log('✅ Raw user growth response:', userGrowthResponse);
+    const dummyUserGrowth = [
+      { date: startDate.toISOString().split('T')[0], users: 1000 },
+      { date: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 25)).toISOString().split('T')[0], users: 1050 },
+      { date: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 20)).toISOString().split('T')[0], users: 1100 },
+      { date: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 15)).toISOString().split('T')[0], users: 1150 },
+      { date: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 10)).toISOString().split('T')[0], users: 1200 },
+      { date: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 5)).toISOString().split('T')[0], users: 1225 },
+      { date: endDate.toISOString().split('T')[0], users: 1250 }
+    ];
 
-        // FIXED: Access the nested data structure
-        if (userGrowthResponse && userGrowthResponse.data && userGrowthResponse.data.userGrowth) {
-          // Your API returns: {data: {userGrowth: Array(1), dateRange: {...}, interval: 'day'}}
-          if (Array.isArray(userGrowthResponse.data.userGrowth) && userGrowthResponse.data.userGrowth.length > 0) {
-            console.log('✅ User growth data found:', userGrowthResponse.data.userGrowth);
-
-            // Use the data directly from the API - no transformation needed
-            setUserGrowthData({
-              userGrowth: userGrowthResponse.data.userGrowth,
-              dateRange: userGrowthResponse.data.dateRange || { start: startDate.toISOString().split('T')[0], end: endDate.toISOString().split('T')[0] },
-              interval: userGrowthResponse.data.interval || 'day'
-            });
-          } else {
-            console.warn('⚠️ User growth data is empty array:', userGrowthResponse.data.userGrowth);
-            setUserGrowthData(null);
-          }
-        } else {
-          console.warn('⚠️ No userGrowth property in response:', userGrowthResponse);
-          setUserGrowthData(null);
-        }
-      } catch (growthErr) {
-        console.error('❌ User growth error:', growthErr.message);
-        toast.error('Failed to load user growth data');
-        setUserGrowthData(null);
-      }
-    };
-
-    fetchUserGrowth();
+    setUserGrowthData({
+      userGrowth: dummyUserGrowth,
+      dateRange: { start: startDate.toISOString().split('T')[0], end: endDate.toISOString().split('T')[0] },
+      interval: 'day'
+    });
   }, []);
 
   // Check for URL params to restore modal state on refresh
@@ -146,40 +144,60 @@ const Reports = () => {
     setModalTitle(`${type.charAt(0).toUpperCase() + type.slice(1)} Details - ${new Date(date).toLocaleDateString()}`);
 
     try {
-      let response;
+      // Use dummy data based on type
+      let data = [];
       switch (type) {
         case 'users':
-          response = await adminApi.getUsersReportsDaily({ date });
+          data = [
+            { _id: '1', id: 'ST20250001', username: 'john_doe', email: 'john@example.com', balance: 150 },
+            { _id: '2', id: 'ST20250002', username: 'jane_smith', email: 'jane@example.com', balance: 200 },
+            { _id: '3', id: 'ST20250003', username: 'bob_wilson', email: 'bob@example.com', balance: 75 }
+          ];
           break;
         case 'deposits':
-          response = await adminApi.getTransactionReportsDaily({ date, type: 'deposit' });
+          data = [
+            { _id: '1', id: 'TXN001', user: 'john_doe', amount: 500, type: 'deposit', status: 'completed' },
+            { _id: '2', id: 'TXN002', user: 'jane_smith', amount: 300, type: 'deposit', status: 'completed' },
+            { _id: '3', id: 'TXN003', user: 'bob_wilson', amount: 150, type: 'deposit', status: 'pending' }
+          ];
           break;
         case 'withdrawals':
-          response = await adminApi.getTransactionReportsDaily({ date, type: 'withdrawal' });
+          data = [
+            { _id: '1', id: 'TXN004', user: 'john_doe', amount: 200, type: 'withdrawal', status: 'completed' },
+            { _id: '2', id: 'TXN005', user: 'jane_smith', amount: 100, type: 'withdrawal', status: 'pending' }
+          ];
           break;
         case 'posts':
-          response = await adminApi.getPostReportDaily({ date });
+          data = [
+            {
+              _id: '1',
+              content: 'Sample post content about technology',
+              user: { username: 'john_doe', userAvatar: null },
+              status: 'approved',
+              approved: true,
+              createdAt: new Date().toISOString(),
+              media: []
+            },
+            {
+              _id: '2',
+              content: 'Another interesting post',
+              user: { username: 'jane_smith', userAvatar: null },
+              status: 'pending',
+              approved: false,
+              createdAt: new Date(Date.now() - 86400000).toISOString(),
+              media: []
+            }
+          ];
           break;
         case 'affiliateBonuses':
-          response = await adminApi.getAffiliateReportDaily({ date });
+          data = [
+            { _id: '1', id: 'AFF001', user: 'john_doe', amount: 50, type: 'bonus', status: 'paid' },
+            { _id: '2', id: 'AFF002', user: 'jane_smith', amount: 75, type: 'bonus', status: 'pending' }
+          ];
           break;
         default:
           console.error(`Unknown type: ${type}`);
           return;
-      }
-
-      // Standardized response handling
-      let data = [];
-      if (response?.data) {
-        if (Array.isArray(response.data)) {
-          data = response.data;
-        } else if (response.data[type] && Array.isArray(response.data[type])) {
-          data = response.data[type];
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          data = response.data.data;
-        } else if (typeof response.data === 'object') {
-          data = [response.data];
-        }
       }
 
       setModalData(data);

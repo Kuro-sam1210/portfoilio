@@ -11,7 +11,7 @@ const PostsTable = ({
   formatDate
 }) => {
   return (
-    <div className="relative  dark:bg-gray-800 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent">
+    <div className="relative bg-[var(--color-bg-secondary)] dark:bg-gray-800 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/10">
           <thead className="bg-gray-800 backdrop-blur-sm">
@@ -30,11 +30,11 @@ const PostsTable = ({
               </tr>
             ) : paginatedPosts.length > 0 ? (
               paginatedPosts.map((post) => (
-                <tr key={post.id} className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border hover:bg-gray-700" onClick={() => handleView(post)}>
+                <tr key={post.id} className="relative bg-[var(--color-bg-secondary)] dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border hover:bg-gray-700" onClick={() => handleView(post)}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {post.media && post.media.length > 0 && (
-                        <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent hover:border-white/10 flex-shrink-0">
+                        <div className="relative bg-[var(--color-bg-secondary)] dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent hover:border-white/10 flex-shrink-0">
                           {/* show small thumbnail if we have a url */}
                           {post.media[0] ? (
                             // eslint-disable-next-line jsx-a11y/img-redundant-alt

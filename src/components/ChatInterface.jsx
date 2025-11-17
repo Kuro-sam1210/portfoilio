@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FiSend, FiArrowLeft } from 'react-icons/fi';
-import socket from '../socket';
 
 const ChatInterface = () => {
   const [users, setUsers] = useState([
@@ -13,16 +12,9 @@ const ChatInterface = () => {
   const [newMessage, setNewMessage] = useState('');
   const chatRef = useRef(null);
 
+  // Removed socket listeners - using local state only
   useEffect(() => {
-    socket.on('dm-message', (data) => {
-      const { from, to, message } = data;
-      const chatKey = [from, to].sort().join('-');
-      setMessages(prev => ({
-        ...prev,
-        [chatKey]: [...(prev[chatKey] || []), message]
-      }));
-    });
-    return () => socket.off('dm-message');
+    // No socket operations needed
   }, []);
 
   useEffect(() => {
@@ -45,7 +37,7 @@ const ChatInterface = () => {
       ...prev,
       [chatKey]: [...(prev[chatKey] || []), message]
     }));
-    socket.emit('dm-message', { to: selectedUser.id, message });
+    // Simulate sending message (no socket needed)
     setNewMessage('');
   };
 

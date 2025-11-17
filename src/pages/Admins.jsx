@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FiShield, FiUserX, FiTrash2, FiUserCheck, FiEye } from 'react-icons/fi';
 import Modal from '../components/Modal';
-import adminApi from '../api/admin';
 import { toast } from 'sonner';
 
 
@@ -24,32 +23,51 @@ export default function Admins() {
    const itemsPerPage = 10;
    const [updateLoading, setUpdateLoading] = useState(false);
 
-  // Fetch admins from API
+  // Load dummy admins
   useEffect(() => {
     const loadAdmins = async () => {
       setLoading(true);
       try {
-        const res = await adminApi.getAdmins();
-        // Normalize response shapes
-        let list = [];
-        if (Array.isArray(res)) {
-          list = res;
-        } else if (Array.isArray(res?.data)) {
-          list = res.data;
-        } else if (Array.isArray(res?.data?.data)) {
-          list = res.data.data;
-        } else if (Array.isArray(res?.admins)) {
-          list = res.admins;
-        } else if (Array.isArray(res?.data?.admins)) {
-          list = res.data.admins;
-        }
-
-        // Ensure all admins have a status field, defaulting to 'Active'
-        const processedList = list.length ? list.map(admin => ({
-          ...admin,
-          status: admin.status || 'Active'
-        })) : [];
-        setAdmins(processedList);
+        // Use dummy admin data
+        const dummyAdmins = [
+          {
+            _id: 'ADMIN001',
+            id: 'ADMIN001',
+            username: 'super_admin',
+            firstName: 'Super',
+            lastName: 'Admin',
+            email: 'super@admin.com',
+            role: 'super_admin',
+            status: 'Active',
+            lastLogin: new Date().toLocaleString(),
+            permissions: ['users_view', 'users_edit', 'admin_create', 'admin_delete', 'view_dashboard']
+          },
+          {
+            _id: 'ADMIN002',
+            id: 'ADMIN002',
+            username: 'admin_user',
+            firstName: 'Admin',
+            lastName: 'User',
+            email: 'admin@example.com',
+            role: 'admin',
+            status: 'Active',
+            lastLogin: new Date(Date.now() - 86400000).toLocaleString(),
+            permissions: ['users_view', 'view_post', 'transactions_view', 'reports_view']
+          },
+          {
+            _id: 'ADMIN003',
+            id: 'ADMIN003',
+            username: 'support_admin',
+            firstName: 'Support',
+            lastName: 'Admin',
+            email: 'support@admin.com',
+            role: 'admin',
+            status: 'Inactive',
+            lastLogin: new Date(Date.now() - 172800000).toLocaleString(),
+            permissions: ['read_support_tickets', 'respond_support_tickets']
+          }
+        ];
+        setAdmins(dummyAdmins);
       } catch (err) {
         console.error('[admins] fetch error', err);
         setAdmins([]);
@@ -78,8 +96,9 @@ export default function Admins() {
 
   const applyRoleUpdate = async (id, updates) => {
     try {
-      const res = await adminApi.updateAdmin(id, updates);
-      console.log('Admin updated:', res);
+      // Simulate update
+      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Admin updated:', updates);
       // Update local state
       setAdmins((prev) => prev.map((a) => (a._id === id || a.id === id ? { ...a, ...updates } : a)));
     } catch (err) {
@@ -90,7 +109,8 @@ export default function Admins() {
 
   const toggleAdminStatus = async (id, action) => {
     try {
-      const res = await adminApi.toggleAdminStatus(id, action);
+      // Simulate toggle
+      await new Promise(resolve => setTimeout(resolve, 300));
       if (action === 'deactivate') {
         setAdmins((prev) => prev.map((a) => (a._id === id || a.id === id ? { ...a, status: 'Inactive' } : a)));
         toast.success('Admin deactivated successfully');
@@ -98,7 +118,7 @@ export default function Admins() {
         setAdmins((prev) => prev.map((a) => (a._id === id || a.id === id ? { ...a, status: 'Active' } : a)));
         toast.success('Admin activated successfully');
       }
-      console.log(`${action} response:`, res);
+      console.log(`${action} response: simulated`);
     } catch (err) {
       console.error(`Failed to ${action} admin:`, err);
       toast.error(`Failed to ${action} admin`);
@@ -107,10 +127,11 @@ export default function Admins() {
 
   const deleteAdminUser = async (id) => {
     try {
-      const res = await adminApi.deleteAdmin(id);
+      // Simulate delete
+      await new Promise(resolve => setTimeout(resolve, 300));
       setAdmins((prev) => prev.filter((a) => (a._id !== id && a.id !== id)));
       toast.success('Admin deleted successfully');
-      console.log('Delete response:', res);
+      console.log('Delete response: simulated');
     } catch (err) {
       console.error('Failed to delete admin:', err);
       toast.error('Failed to delete admin');
@@ -135,13 +156,27 @@ export default function Admins() {
         permissions: permissions
       };
 
-      const res = await adminApi.createAdmin(adminDataWithPermissions);
-      console.log('Admin created:', res);
+      // Simulate create
+      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('Admin created:', adminDataWithPermissions);
+
+      // Create a new admin object
+      const newAdmin = {
+        _id: `ADMIN${Date.now()}`,
+        id: `ADMIN${Date.now()}`,
+        username: adminData.username,
+        firstName: adminData.firstName,
+        lastName: adminData.lastName,
+        email: adminData.email,
+        role: adminData.role,
+        status: 'Active',
+        lastLogin: 'Never',
+        permissions: permissions
+      };
+
       // Add the new admin to the list
-      if (res?.data) {
-        setAdmins((prev) => [res.data, ...prev]);
-      }
-      return res;
+      setAdmins((prev) => [newAdmin, ...prev]);
+      return { data: newAdmin };
     } catch (err) {
       console.error('Failed to create admin:', err);
       throw err;

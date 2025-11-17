@@ -1,5 +1,4 @@
 import { useMemo, useState, useEffect } from 'react';
-import adminApi from '../../api/admin';
 import { toast } from 'sonner';
 
 const useTransactionsData = () => {
@@ -13,12 +12,38 @@ const useTransactionsData = () => {
 
   const loadTransactions = async (page = 1) => {
     try {
-      const res = await adminApi.getTransactions({ page, perPage: itemsPerPage });
+      // Dummy transactions data
+      const dummyTransactions = [
+        {
+          _id: '1',
+          user: 'user1@example.com',
+          transactionAmount: 50,
+          type: 'deposit',
+          status: 'completed',
+          createdAt: new Date().toISOString(),
+          details: 'Deposit via PayPal'
+        },
+        {
+          _id: '2',
+          user: 'user2@example.com',
+          transactionAmount: 25,
+          type: 'withdrawal',
+          status: 'pending',
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          details: 'Withdrawal to bank'
+        },
+        {
+          _id: '3',
+          user: 'user3@example.com',
+          transactionAmount: 100,
+          type: 'subscription',
+          status: 'completed',
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          details: 'Monthly subscription'
+        }
+      ];
 
-      let list = res?.data ?? res?.data?.data ?? res ?? [];
-      if (!Array.isArray(list)) list = [];
-
-      const mapped = list.map((t) => ({
+      const mapped = dummyTransactions.map((t) => ({
         id: t._id || t.id || t.transactionId || '',
         user: t.user || t.username || t.email || '',
         amount: Number(t.transactionAmount ?? t.balance ?? t.amount ?? 0),
@@ -29,7 +54,7 @@ const useTransactionsData = () => {
       }));
 
       setTransactions(mapped);
-      setTotalPages(res?.pagination?.totalPages || Math.ceil(list.length / itemsPerPage) || 1);
+      setTotalPages(Math.ceil(dummyTransactions.length / itemsPerPage) || 1);
     } catch (e) {
       console.error('Failed to fetch transactions:', e);
       toast.error('Failed to fetch transactions');

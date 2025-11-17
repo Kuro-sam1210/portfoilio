@@ -28,7 +28,7 @@ const UsersTable = ({
 
   return (
     <div className="relative">
-      <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent hover:border-white/10">
+      <div className="relative bg-[var(--color-bg-secondary)] dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-transparent hover:border-white/10">
         <table className="min-w-full divide-y divide-[var(--color-bg-tertiary)]">
           <thead className="bg-transparent">
         <tr>

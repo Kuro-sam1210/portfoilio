@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
-import adminApi from '../api/admin';
 import { toast } from 'sonner';
 import { FiCopy, FiEdit2 } from 'react-icons/fi';
 
@@ -73,34 +72,57 @@ export default function UserModal() {
       }
       setLoading(true);
       try {
-        const res = await adminApi.getUserById(userId);
-        let details = null;
-        if (!res) details = null;
-        else if (res?.user) details = res.user;
-        else if (res?.data) details = res.data;
-        else details = res;
-        // reuse toShape-like minimal normalization
-        const id = details?.userId || details?._id || details?.id || userId;
-        const username = details?.username || (details?.email ? details.email.split('@')[0] : '');
-        const first = details?.firstName || details?.first || '';
-        const last = details?.lastName || details?.lastName || details?.last || '';
+        // Use dummy user data
+        const dummyUser = {
+          userId: userId,
+          _id: userId,
+          id: userId,
+          username: userId === 'ST20250001' ? 'john_doe' : userId === 'ST20250002' ? 'jane_smith' : 'user_' + userId,
+          firstName: userId === 'ST20250001' ? 'John' : userId === 'ST20250002' ? 'Jane' : 'User',
+          lastName: userId === 'ST20250001' ? 'Doe' : userId === 'ST20250002' ? 'Smith' : 'Name',
+          email: userId === 'ST20250001' ? 'john@example.com' : userId === 'ST20250002' ? 'jane@example.com' : 'user@example.com',
+          subscriptionPlan: 'Premium',
+          balance: 150,
+          isDisabled: false,
+          verified: true,
+          dateJoined: new Date().toISOString(),
+          bio: 'Sample user bio',
+          city: 'Lagos',
+          state: 'LA',
+          country: 'Nigeria',
+          distance: 50,
+          showDistance: true,
+          showOnlineStatus: true,
+          hobbies: ['Reading', 'Coding'],
+          interests: ['Technology', 'Music'],
+          gender: 'Male',
+          dateOfBirth: '1995-03-15',
+          ageRange: { start: 18, end: 35 },
+          canWithdraw: true,
+          profileVerification: true,
+        };
+
+        const id = dummyUser.userId || dummyUser._id || dummyUser.id || userId;
+        const username = dummyUser.username || (dummyUser.email ? dummyUser.email.split('@')[0] : '');
+        const first = dummyUser.firstName || dummyUser.first || '';
+        const last = dummyUser.lastName || dummyUser.lastName || dummyUser.last || '';
         const fullName = `${first} ${last}`.trim() || username;
-        const planRaw = details?.subscriptionPlan ?? 'Free';
+        const planRaw = dummyUser.subscriptionPlan ?? 'Free';
         const subscriptionPlan = planRaw && typeof planRaw === 'object' ? (planRaw.planName || planRaw.name || 'Free') : planRaw;
 
-        const verifiedFlag = details?.verified ?? details?.isVerified ?? details?.profileVerification ?? false;
+        const verifiedFlag = dummyUser.verified ?? dummyUser.isVerified ?? dummyUser.profileVerification ?? false;
         const newUser = {
           id,
           username,
-          profilePic: details?.picture || details?.profilePic || '',
+          profilePic: dummyUser.picture || dummyUser.profilePic || '',
           fullName,
-          email: details?.email || '',
+          email: dummyUser.email || '',
           subscriptionPlan,
-          balance: typeof details?.balance !== 'undefined' ? details.balance : (details?.rawBalance || 0),
-          isDisabled: details?.isDisabled || false,
+          balance: typeof dummyUser.balance !== 'undefined' ? dummyUser.balance : (dummyUser.rawBalance || 0),
+          isDisabled: dummyUser.isDisabled || false,
           verified: !!verifiedFlag,
-          dateJoined: details?.dateJoined ? new Date(details.dateJoined).toLocaleDateString() : (details?.dateJoinedString || ''),
-          raw: details,
+          dateJoined: dummyUser.dateJoined ? new Date(dummyUser.dateJoined).toLocaleDateString() : '',
+          raw: dummyUser,
         };
         setUser(newUser);
         setFormState({
@@ -166,15 +188,23 @@ export default function UserModal() {
     if (!userId || !formState) return;
     setLoading(true);
     try {
-      const body = {
+      // Simulate update with dummy data
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+
+      // Create updated user object
+      const updatedUser = {
+        userId: userId,
+        _id: userId,
+        id: userId,
+        username: formState.username,
         firstName: formState.fullName.split(' ')[0] || '',
         lastName: formState.fullName.split(' ').slice(1).join(' ') || '',
-        username: formState.username,
         email: formState.email,
         subscriptionPlan: formState.subscriptionPlan,
-        // backend expects isVerified/profileVerification flags
-        isVerified: !!formState.verified,
-        profileVerification: !!formState.verified,
+        balance: user.balance,
+        isDisabled: formState.isDisabled,
+        verified: formState.verified,
+        dateJoined: user.raw?.dateJoined || new Date().toISOString(),
         bio: formState.bio,
         city: formState.city,
         state: formState.state,
@@ -188,70 +218,61 @@ export default function UserModal() {
         dateOfBirth: formState.dateOfBirth ? new Date(formState.dateOfBirth).toISOString() : null,
         ageRange: formState.ageRange,
         canWithdraw: formState.canWithdraw,
-        isDisabled: formState.isDisabled,
+        profileVerification: formState.profileVerification,
       };
-      const res = await adminApi.updateUser(userId, body);
-      const updated = res?.user || res?.data || res?.updatedUser || res;
-      if (updated) {
-        // notify Users list to update
-        window.dispatchEvent(new CustomEvent('admin:user-updated', { detail: updated }));
-        toast.success('User updated');
-        // reload details
-        const reloaded = await adminApi.getUserById(userId);
-        let details = null;
-        if (!reloaded) details = null;
-        else if (reloaded?.user) details = reloaded.user;
-        else if (reloaded?.data) details = reloaded.data;
-        else details = reloaded;
-        const id = details?.userId || details?._id || details?.id || userId;
-        const username = details?.username || (details?.email ? details.email.split('@')[0] : '');
-        const first = details?.firstName || details?.first || '';
-        const last = details?.lastName || details?.lastName || details?.last || '';
-        const fullName = `${first} ${last}`.trim() || username;
-        const planRaw = details?.subscriptionPlan ?? 'Free';
-        const subscriptionPlan = planRaw && typeof planRaw === 'object' ? (planRaw.planName || planRaw.name || 'Free') : planRaw;
-        const verifiedFlag = details?.verified ?? details?.isVerified ?? details?.profileVerification ?? false;
-        const newUser = {
-          id,
-          username,
-          profilePic: details?.picture || details?.profilePic || '',
-          fullName,
-          email: details?.email || '',
-          subscriptionPlan,
-          balance: typeof details?.balance !== 'undefined' ? details.balance : (details?.rawBalance || 0),
-          isDisabled: details?.isDisabled || false,
-          verified: !!verifiedFlag,
-          dateJoined: details?.dateJoined ? new Date(details.dateJoined).toLocaleDateString() : (details?.dateJoinedString || ''),
-          raw: details,
-        };
-        setUser(newUser);
-        setFormState({
-          fullName: newUser.fullName || '',
-          username: newUser.username || '',
-          email: newUser.email || '',
-          subscriptionPlan: newUser.subscriptionPlan || 'Free',
-          verified: !!newUser.verified,
-          bio: newUser.raw?.bio || '',
-          city: newUser.raw?.city || '',
-          state: newUser.raw?.state || '',
-          country: newUser.raw?.country || '',
-          distance: newUser.raw?.distance || 50,
-          showDistance: newUser.raw?.showDistance ?? true,
-          showOnlineStatus: newUser.raw?.showOnlineStatus ?? true,
-          hobbies: Array.isArray(newUser.raw?.hobbies) ? newUser.raw.hobbies : [],
-          interests: Array.isArray(newUser.raw?.interests) ? newUser.raw.interests : [],
-          gender: newUser.raw?.gender || '',
-          dateOfBirth: newUser.raw?.dateOfBirth ? new Date(newUser.raw.dateOfBirth).toISOString().split('T')[0] : '',
-          ageRange: newUser.raw?.ageRange || { start: 18, end: 35 },
-          canWithdraw: newUser.raw?.canWithdraw ?? true,
-          isDisabled: newUser.raw?.isDisabled ?? false,
-          profileVerification: newUser.raw?.profileVerification ?? false,
-        });
-        setEditing(false);
-      } else {
-        toast.success('Updated (no payload returned)');
-        setEditing(false);
-      }
+
+      // notify Users list to update
+      window.dispatchEvent(new CustomEvent('admin:user-updated', { detail: updatedUser }));
+      toast.success('User updated');
+
+      // Update local state
+      const id = updatedUser.userId || updatedUser._id || updatedUser.id || userId;
+      const username = updatedUser.username || (updatedUser.email ? updatedUser.email.split('@')[0] : '');
+      const first = updatedUser.firstName || updatedUser.first || '';
+      const last = updatedUser.lastName || updatedUser.lastName || updatedUser.last || '';
+      const fullName = `${first} ${last}`.trim() || username;
+      const planRaw = updatedUser.subscriptionPlan ?? 'Free';
+      const subscriptionPlan = planRaw && typeof planRaw === 'object' ? (planRaw.planName || planRaw.name || 'Free') : planRaw;
+      const verifiedFlag = updatedUser.verified ?? updatedUser.isVerified ?? updatedUser.profileVerification ?? false;
+
+      const newUser = {
+        id,
+        username,
+        profilePic: updatedUser.picture || updatedUser.profilePic || '',
+        fullName,
+        email: updatedUser.email || '',
+        subscriptionPlan,
+        balance: typeof updatedUser.balance !== 'undefined' ? updatedUser.balance : (updatedUser.rawBalance || 0),
+        isDisabled: updatedUser.isDisabled || false,
+        verified: !!verifiedFlag,
+        dateJoined: updatedUser.dateJoined ? new Date(updatedUser.dateJoined).toLocaleDateString() : '',
+        raw: updatedUser,
+      };
+
+      setUser(newUser);
+      setFormState({
+        fullName: newUser.fullName || '',
+        username: newUser.username || '',
+        email: newUser.email || '',
+        subscriptionPlan: newUser.subscriptionPlan || 'Free',
+        verified: !!newUser.verified,
+        bio: newUser.raw?.bio || '',
+        city: newUser.raw?.city || '',
+        state: newUser.raw?.state || '',
+        country: newUser.raw?.country || '',
+        distance: newUser.raw?.distance || 50,
+        showDistance: newUser.raw?.showDistance ?? true,
+        showOnlineStatus: newUser.raw?.showOnlineStatus ?? true,
+        hobbies: Array.isArray(newUser.raw?.hobbies) ? newUser.raw.hobbies : [],
+        interests: Array.isArray(newUser.raw?.interests) ? newUser.raw.interests : [],
+        gender: newUser.raw?.gender || '',
+        dateOfBirth: newUser.raw?.dateOfBirth ? new Date(newUser.raw.dateOfBirth).toISOString().split('T')[0] : '',
+        ageRange: newUser.raw?.ageRange || { start: 18, end: 35 },
+        canWithdraw: newUser.raw?.canWithdraw ?? true,
+        isDisabled: newUser.raw?.isDisabled ?? false,
+        profileVerification: newUser.raw?.profileVerification ?? false,
+      });
+      setEditing(false);
     } catch (err) {
       console.error('[user modal] update error', err);
       toast.error('Failed to update user');

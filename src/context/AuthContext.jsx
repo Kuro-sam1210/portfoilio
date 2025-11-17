@@ -5,9 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import api from '../api/axios';
 import { setCookie as setCookieUtil, getCookie as getCookieUtil, removeCookie as removeCookieUtil } from '../api/cookies';
-import adminApi from '../api/admin';
 
 // ---------- Auth Context ----------
 const AuthContext = createContext(null);
@@ -56,27 +54,13 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        // Call the real admin API helpers. They log responses; we still normalize.
-        const countRes = await adminApi.getNotificationCount(adminId);
-        console.log('[auth] getNotificationCount raw', countRes);
-        // handle various shapes: number, { count }, { data: { count } }
-        let count = 0;
-        if (typeof countRes === 'number') count = countRes;
-        else if (countRes?.count != null) count = countRes.count;
-        else if (countRes?.data?.count != null) count = countRes.data.count;
-        else if (countRes?.data != null && typeof countRes.data === 'number') count = countRes.data;
-        setNotifications(Number(count) || 0);
-
-        const listRes = await adminApi.getNotificationsList(adminId);
-        console.log('[auth] getNotificationsList raw', listRes);
-        // normalize list: either array, or res.data, or res.data.data
-        let list = [];
-        if (Array.isArray(listRes)) list = listRes;
-        else if (Array.isArray(listRes?.data)) list = listRes.data;
-        else if (Array.isArray(listRes?.data?.data)) list = listRes.data.data;
-        // finally map into the shape used by Navbar
-        const mapped = list.map((it) => ({ label: it.label || it.title || it.type || 'Notification', count: it.count || it.num || 1, to: it.to || '/reports' }));
-        setNotificationsList(mapped);
+        // Use dummy notification data
+        setNotifications(3);
+        setNotificationsList([
+          { label: 'New User Registrations', count: 5, to: '/users' },
+          { label: 'Pending Reports', count: 2, to: '/reports' },
+          { label: 'System Alerts', count: 1, to: '/settings' }
+        ]);
       } catch (e) {
         console.error('[auth] fetch notifications error', e);
         setNotifications(0);
@@ -90,20 +74,23 @@ export const AuthProvider = ({ children }) => {
 
   const login = async ({ email, password }) => {
     try {
-      const {data} = await api.post('/admin/login', { email, password });
-      let token = data?.token;
-      if (!token) {
-        token = getCookieUtil('token') || null;
+      // Simulate login with dummy data
+      if (email === 'buildwithsam@gmail.com' && password === 'password') {
+        const adminObj = {
+          email: 'buildwithsam@gmail.com',
+          role: 'super_admin',
+          permissions: ['all'],
+          userId: 'admin123'
+        };
+        setCookieUtil('token', 'dummy-token');
+        setAdmin(adminObj);
+        return { ok: true };
+      } else {
+        return { ok: false, error: 'Invalid credentials' };
       }
-      const adminObj = data?.admin || data?.user || { email };
-      if (token) setCookieUtil('token', token);
-      console.log(data.admin)
-      setAdmin(adminObj);
-      return { ok: true };
     } catch (err) {
       console.error('[auth] login error', err);
-      const message = err?.message || err?.error || err?.detail || (typeof err === 'string' ? err : JSON.stringify(err));
-      return { ok: false, error: message || 'Login failed' };
+      return { ok: false, error: 'Login failed' };
     }
   };
 
@@ -119,15 +106,8 @@ export const AuthProvider = ({ children }) => {
   // keep the exported functions (used elsewhere) but route them to the real admin API when possible
   const fetchNotificationCount = async () => {
     try {
-      const currentAdmin = admin || JSON.parse(getCookieUtil('Admin') || 'null');
-      const adminId = currentAdmin?.userId || currentAdmin?._id || currentAdmin?.id || null;
-      if (!adminId) return 0;
-      const res = await adminApi.getNotificationCount(adminId);
-      if (typeof res === 'number') return res;
-      if (res?.count != null) return res.count;
-      if (res?.data?.count != null) return res.data.count;
-      if (res?.data != null && typeof res.data === 'number') return res.data;
-      return 0;
+      // Return dummy notification count
+      return 3;
     } catch (e) {
       console.error('[auth] fetchNotificationCount error', e);
       return 0;
@@ -136,14 +116,12 @@ export const AuthProvider = ({ children }) => {
 
   const fetchNotificationsList = async () => {
     try {
-      const currentAdmin = admin || JSON.parse(getCookieUtil('Admin') || 'null');
-      const adminId = currentAdmin?.userId || currentAdmin?._id || currentAdmin?.id || null;
-      if (!adminId) return [];
-      const res = await adminApi.getNotificationsList(adminId);
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res?.data)) return res.data;
-      if (Array.isArray(res?.data?.data)) return res.data.data;
-      return [];
+      // Return dummy notification list
+      return [
+        { label: 'New User Registrations', count: 5, to: '/users' },
+        { label: 'Pending Reports', count: 2, to: '/reports' },
+        { label: 'System Alerts', count: 1, to: '/settings' }
+      ];
     } catch (e) {
       console.error('[auth] fetchNotificationsList error', e);
       return [];

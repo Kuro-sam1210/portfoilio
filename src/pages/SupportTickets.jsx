@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FiMessageSquare, FiSend, FiTrash2 } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
-import socket from '../socket';
 import { useAuth } from '../context/AuthContext';
-import { deleteTicket } from '../api/admin';
 
 const formatDate = (s) => new Date(s).toLocaleString();
 
@@ -53,16 +51,11 @@ const SupportTickets = () => {
   useEffect(() => {
     if (selected && admin && !joinedTickets.has(selected)) {
       console.log('🔄 Admin joining ticket:', selected);
-      
-      const adminId = admin?.userId || admin?._id || admin?.id;
-      const adminName = admin?.name || admin?.username || 'Admin';
-      
-      // Use the correct backend event: admin-join-ticket
-      socket.emit('admin-join-ticket', {
-        ticketId: selected,
-        adminId: adminId,
-        adminName: adminName
-      });
+
+      // Simulate joining ticket
+      setTimeout(() => {
+        console.log('✅ Admin successfully joined ticket:', selected);
+      }, 500);
 
       // Mark this ticket as joined
       setJoinedTickets(prev => new Set(prev).add(selected));
@@ -70,171 +63,110 @@ const SupportTickets = () => {
   }, [selected, admin, joinedTickets]);
 
   useEffect(() => {
-    console.log('📡 Connecting to IssueTicket socket...');
+    console.log('📡 Loading dummy support tickets...');
     setLoading(true);
 
-    socket.emit('get-all-tickets');
-
-    socket.on('all-tickets', (data) => {
-      console.log('🎟️ Received all tickets:', data);
-      let ticketList = [];
-      if (Array.isArray(data)) {
-        ticketList = data;
-      } else if (data?.tickets && Array.isArray(data.tickets)) {
-        ticketList = data.tickets;
-      }
-      setTickets(ticketList.map(normalizeTicket));
-      setLoading(false);
-    });
-
-    socket.on('new-ticket-alert', (alertData) => {
-      console.log('🔔 New ticket alert:', alertData);
-      const newTicket = normalizeTicket({
-        ticketId: alertData.ticketId,
-        id: alertData.ticketId,
-        category: alertData.issueType,
-        issueLabel: alertData.issueType,
-        status: 'open',
-        subject: alertData.description,
-        description: alertData.description,
-        user: alertData.user,
-        updatedAt: alertData.createdAt,
-        createdAt: alertData.createdAt,
-        messages: [],
-        priority: alertData.priority,
-        issueType: alertData.issueId
-      });
-      setTickets((prev) => {
-        const exists = prev.some(t => t.id === newTicket.id);
-        if (!exists) {
-          return [newTicket, ...prev];
-        }
-        return prev;
-      });
-    });
-
-    // **FIX: Handle admin-joined event (when admin successfully joins)**
-    socket.on('admin-joined', (data) => {
-      console.log('✅ Admin successfully joined ticket:', data);
-      if (data.ticket) {
-        const normalizedTicket = normalizeTicket(data.ticket);
-        setTickets((prev) =>
-          prev.map((t) => (t.id === normalizedTicket.id ? normalizedTicket : t))
-        );
-      }
-    });
-
-    // **FIX: Enhanced message handling**
-    const handleNewMessage = (msg) => {
-      console.log('📨 Received new message:', msg);
-      
-      const mappedMsg = {
-        from: msg.role === 'admin' ? 'admin' : msg.role === 'system' ? 'system' : 'user',
-        text: msg.message,
-        message: msg.message,
-        sender: msg.sender,
-        timestamp: msg.timestamp,
-        at: msg.timestamp,
-        time: msg.time,
-        senderId: msg.senderId,
-        role: msg.role,
-        id: msg.id
-      };
-
-      console.log('✅ Adding message to ticket:', msg.ticketId);
-      
-      setTickets((prev) =>
-        prev.map((t) => {
-          if (t.id === msg.ticketId) {
-            // Avoid duplicate messages by checking id
-            const messageExists = t.thread?.some(m => m.id === mappedMsg.id);
-            
-            if (messageExists) {
-              console.log('⏭️ Message already exists, skipping');
-              return t;
+    // Load dummy tickets after a short delay
+    setTimeout(() => {
+      const dummyTickets = [
+        {
+          ticketId: 'TICKET001',
+          id: 'TICKET001',
+          user: 'john_doe',
+          subject: 'Deposit issue - payment not reflecting',
+          description: 'Deposit issue - payment not reflecting',
+          category: 'deposit',
+          issueLabel: 'deposit',
+          status: 'open',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          messages: [
+            {
+              id: 'msg1',
+              from: 'user',
+              message: 'Hi, I made a deposit but it\'s not showing in my account balance.',
+              sender: 'john_doe',
+              timestamp: new Date(Date.now() - 3600000).toISOString(),
+              role: 'user'
+            },
+            {
+              id: 'msg2',
+              from: 'admin',
+              message: 'Hello! I\'m checking your deposit transaction. Can you please provide the transaction ID?',
+              sender: 'Admin',
+              timestamp: new Date(Date.now() - 1800000).toISOString(),
+              role: 'admin'
             }
+          ],
+          priority: 'medium',
+          issueType: 'deposit'
+        },
+        {
+          ticketId: 'TICKET002',
+          id: 'TICKET002',
+          user: 'jane_smith',
+          subject: 'Account verification taking too long',
+          description: 'Account verification taking too long',
+          category: 'kyc',
+          issueLabel: 'kyc',
+          status: 'in-progress',
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          updatedAt: new Date(Date.now() - 43200000).toISOString(),
+          messages: [
+            {
+              id: 'msg3',
+              from: 'user',
+              message: 'My account verification has been pending for 3 days now.',
+              sender: 'jane_smith',
+              timestamp: new Date(Date.now() - 86400000).toISOString(),
+              role: 'user'
+            }
+          ],
+          priority: 'high',
+          issueType: 'kyc'
+        },
+        {
+          ticketId: 'TICKET003',
+          id: 'TICKET003',
+          user: 'bob_wilson',
+          subject: 'Unable to reset password',
+          description: 'Unable to reset password',
+          category: 'password',
+          issueLabel: 'password',
+          status: 'closed',
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+          updatedAt: new Date(Date.now() - 86400000).toISOString(),
+          messages: [
+            {
+              id: 'msg4',
+              from: 'user',
+              message: 'I\'m having trouble resetting my password. The reset link isn\'t working.',
+              sender: 'bob_wilson',
+              timestamp: new Date(Date.now() - 172800000).toISOString(),
+              role: 'user'
+            },
+            {
+              id: 'msg5',
+              from: 'admin',
+              message: 'I\'ve reset your password. Please check your email for the new temporary password.',
+              sender: 'Admin',
+              timestamp: new Date(Date.now() - 86400000).toISOString(),
+              role: 'admin'
+            }
+          ],
+          priority: 'low',
+          issueType: 'password'
+        }
+      ];
 
-            const updatedThread = [...(t.thread || []), mappedMsg];
-            return {
-              ...t,
-              thread: updatedThread,
-              lastActivity: mappedMsg.timestamp,
-              updatedAt: mappedMsg.timestamp
-            };
-          }
-          return t;
-        })
-      );
-    };
-
-    socket.on('new-message', handleNewMessage);
-
-    // Handle admin connected notification
-    socket.on('admin-connected', (data) => {
-      console.log('👨‍💼 Admin connected to ticket:', data);
-    });
-
-    socket.on('ticket-updated', (updatedTicket) => {
-      console.log('🔄 Ticket updated:', updatedTicket);
-      const normalized = normalizeTicket(updatedTicket);
-      setTickets((prev) =>
-        prev.map((t) => (t.id === normalized.id ? normalized : t))
-      );
-    });
-
-    socket.on('ticket-closed', (data) => {
-      console.log('🔒 Ticket closed:', data);
-      setTickets((prev) =>
-        prev.map((t) =>
-          t.id === data.ticket?.ticketId || t.id === data.ticketId
-            ? { ...t, status: 'closed', closeReason: data.ticket?.closeReason }
-            : t
-        )
-      );
-    });
-
-    socket.on('user-typing', (data) => {
-      console.log('⌨️ User typing:', data);
-      // You can add typing indicator UI here if needed
-    });
-
-    socket.on('error', (error) => {
-      console.error('❌ Socket error:', error);
-      if (error.message) {
-        alert(error.message);
-      }
-    });
-
-    socket.on('connect', () => console.log('✅ Connected to socket', socket.id));
-    socket.on('disconnect', () => console.log('❌ Disconnected from socket'));
-    socket.on('connect_error', (err) => {
-      console.error('⚠️ Socket connection error:', err);
+      setTickets(dummyTickets.map(normalizeTicket));
       setLoading(false);
-    });
-
-    const timeout = setTimeout(() => {
-      if (loading) {
-        console.warn('⏱️ Timeout: No response from socket');
-        setLoading(false);
-      }
-    }, 6000);
+    }, 1000);
 
     return () => {
-      clearTimeout(timeout);
-      socket.off('all-tickets');
-      socket.off('new-ticket-alert');
-      socket.off('admin-joined');
-      socket.off('new-message');
-      socket.off('admin-connected');
-      socket.off('ticket-updated');
-      socket.off('ticket-closed');
-      socket.off('user-typing');
-      socket.off('error');
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('connect_error');
+      // Cleanup
     };
-  }, [loading]);
+  }, []);
 
   const current = tickets.find((t) => t.id === selected);
 
@@ -243,15 +175,23 @@ const SupportTickets = () => {
 
     console.log('📤 Admin sending reply to ticket:', current.id);
 
-    const msg = {
-      ticketId: current.id,
+    // Simulate sending message
+    const newMessage = {
+      id: `msg_${Date.now()}`,
+      from: 'admin',
       message: reply.trim(),
+      sender: 'Admin',
+      timestamp: new Date().toISOString(),
       role: 'admin'
     };
 
-    console.log('📤 Sending message:', msg);
-    socket.emit('send-message', msg);
-    
+    // Add message to current ticket
+    setTickets(prev => prev.map(ticket =>
+      ticket.id === current.id
+        ? { ...ticket, thread: [...(ticket.thread || []), newMessage], updatedAt: new Date().toISOString() }
+        : ticket
+    ));
+
     setReply('');
   };
 
@@ -260,7 +200,7 @@ const SupportTickets = () => {
       return;
     }
     try {
-      await deleteTicket(ticketId);
+      // Simulate delete
       setTickets((prev) => prev.filter((t) => t.id !== ticketId));
       if (selected === ticketId) {
         setSelected(null);
@@ -272,10 +212,12 @@ const SupportTickets = () => {
   };
 
   const handleCloseTicket = (ticketId, reason) => {
-    socket.emit('close-ticket', {
-      ticketId,
-      reason: reason || 'Issue resolved'
-    });
+    // Simulate closing ticket
+    setTickets(prev => prev.map(ticket =>
+      ticket.id === ticketId
+        ? { ...ticket, status: 'closed', closeReason: reason || 'Issue resolved', updatedAt: new Date().toISOString() }
+        : ticket
+    ));
   };
 
   const filteredTickets = useMemo(() => {

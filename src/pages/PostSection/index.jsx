@@ -29,7 +29,7 @@ const PostSection = () => {
   } = usePostsData();
 
   return (
-    <div className="p-4 md:p-6 bg-gradient-to-br from-gray-800 to-purple-300 min-h-screen">
+    <div className="p-4 md:p-6 bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen">
       <div className="max-w-[1600px] mx-auto">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between gap-4 flex-wrap">
@@ -47,7 +47,7 @@ const PostSection = () => {
           setSortBy={setSortBy}
         />
 
-        <div className="bg-[var(--color-bg-secondary)] rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-[var(--color-bg-secondary)] rounded-xl shadow-lg overflow-hidden mt-6">
           <PostsTable
             loading={loading}
             paginatedPosts={paginatedPosts}

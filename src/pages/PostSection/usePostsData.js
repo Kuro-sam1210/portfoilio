@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import adminApi from '../../api/admin';
 import { toast } from 'sonner';
 
 // Helper to read URL params
@@ -84,13 +83,40 @@ const usePostsData = () => {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await adminApi.getAllPosts();
-        console.log('[posts] getAllPosts raw', res);
-        let list = [];
-        if (Array.isArray(res)) list = res;
-        else if (Array.isArray(res?.data)) list = res.data;
-        else if (Array.isArray(res?.data?.data)) list = res.data.data;
-        const mappedPosts = list.map(mapPost);
+        // Dummy posts data
+        const dummyPosts = [
+          {
+            _id: '1',
+            content: 'This is a sample post about love and relationships.',
+            author: 'user1',
+            likes: 25,
+            comments: 5,
+            createdAt: new Date().toISOString(),
+            media: ['https://via.placeholder.com/300'],
+            reported: false
+          },
+          {
+            _id: '2',
+            content: 'Another post with some thoughts.',
+            author: 'user2',
+            likes: 10,
+            comments: 2,
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+            media: [],
+            reported: true
+          },
+          {
+            _id: '3',
+            content: 'Post with media content.',
+            author: 'user3',
+            likes: 50,
+            comments: 15,
+            createdAt: new Date(Date.now() - 172800000).toISOString(),
+            media: ['https://via.placeholder.com/400', 'https://via.placeholder.com/500'],
+            reported: false
+          }
+        ];
+        const mappedPosts = dummyPosts.map(mapPost);
         setPosts(mappedPosts);
 
         // Check for URL param to restore modal state
@@ -164,13 +190,8 @@ const usePostsData = () => {
   const handleView = async (post) => {
     setActionLoading(true);
     try {
-      // fetch full post details
-      const res = await adminApi.getPostById(post.id);
-      console.log('[posts] getPostById raw', res);
-      let detail = res;
-      if (res?.data) detail = res.data;
-      if (res?.data?.data) detail = res.data.data;
-      setSelectedPost(mapPost(detail || post));
+      // Use dummy data for post details
+      setSelectedPost(post);
     } catch (err) {
       console.error('[posts] view error', err);
       toast.error('Failed to load post');
@@ -184,7 +205,7 @@ const usePostsData = () => {
     if (!window.confirm('Delete this post?')) return;
     setActionLoading(true);
     try {
-      await adminApi.deletePost(id);
+      // Simulate delete
       setPosts((prev) => prev.filter((p) => p.id !== id));
       toast.success('Post deleted');
       setSelectedPost(null);
@@ -201,15 +222,8 @@ const usePostsData = () => {
     // action: 'approve' | 'reject' | custom
     setActionLoading(true);
     try {
-      await adminApi.moderatePost(id, { action });
+      // Simulate moderation
       toast.success('Post moderation updated');
-      // refresh list
-      const res = await adminApi.getAllPosts();
-      let list = [];
-      if (Array.isArray(res)) list = res;
-      else if (Array.isArray(res?.data)) list = res.data;
-      else if (Array.isArray(res?.data?.data)) list = res.data.data;
-      setPosts(list.map(mapPost));
       setSelectedPost(null);
       setQuery('post', null);
     } catch (err) {

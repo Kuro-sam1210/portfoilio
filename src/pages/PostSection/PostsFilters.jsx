@@ -3,7 +3,7 @@ import { FiSearch } from 'react-icons/fi';
 
 const PostsFilters = ({ searchTerm, setSearchTerm, filter, setFilter, sortBy, setSortBy }) => {
   return (
-    <div className="bg-gray-800 backdrop-blur-xl rounded-xl shadow-lg p-6 mb-6 border transition-all duration-300 hover:shadow-xl">
+    <div className="bg-[var(--color-bg-secondary)] backdrop-blur-xl rounded-xl shadow-lg p-6 mb-6 border transition-all duration-300 hover:shadow-xl">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="relative w-full md:w-96">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
