@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samuel's Business Portfolio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="nav-container">
+        <h1 class="logo">Samuel</h1>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button id="theme-toggle">🌙</button>
+      </div>
+    </nav>
+  </header>
+
+  <section id="hero" class="hero-section">
+    <div class="hero-content animate-fade-in">
+      <h2 class="hero-title">Hi, I'm Samuel</h2>
+      <p class="hero-subtitle">Full-Stack Developer & Tech Innovator</p>
+      <p class="hero-description">Creating advanced web applications, mobile apps, automation tools, and browser extensions to bring your ideas to life.</p>
+      <a href="#projects" class="cta-btn animate-bounce">View My Work</a>
+    </div>
+    <div class="hero-bg">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="container">
+      <h2 class="section-title animate-slide-up">About Me</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>I'm a passionate developer with expertise in web technologies, mobile applications, and automation solutions. I specialize in creating efficient, user-friendly applications that solve real-world problems.</p>
+          <p>With a focus on modern development practices, I deliver high-quality code and innovative solutions tailored to your needs.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat">
+            <h3>10+</h3>
+            <p>Projects Completed</p>
+          </div>
+          <div class="stat">
+            <h3>3+</h3>
+            <p>Years Experience</p>
+          </div>
+          <div class="stat">
+            <h3>100%</h3>
+            <p>Client Satisfaction</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="services-section">
+    <div class="container">
+      <h2 class="section-title animate-slide-up">My Services</h2>
+      <div class="services-grid">
+        <div class="service-card animate-fade-in">
+          <div class="service-icon">🌐</div>
+          <h3>Web Development</h3>
+          <p>Custom websites and web applications using HTML, CSS, JavaScript, and modern frameworks. Responsive, fast, and SEO-optimized.</p>
+        </div>
+        <div class="service-card animate-fade-in">
+          <div class="service-icon">📱</div>
+          <h3>Mobile App Development</h3>
+          <p>Native Android applications with intuitive UI/UX, integrating various APIs and features for seamless user experience.</p>
+        </div>
+        <div class="service-card animate-fade-in">
+          <div class="service-icon">🤖</div>
+          <h3>Automation Scripts</h3>
+          <p>Python-based automation solutions for repetitive tasks, data processing, and system integrations.</p>
+        </div>
+        <div class="service-card animate-fade-in">
+          <div class="service-icon">🔧</div>
+          <h3>Browser Extensions</h3>
+          <p>Chrome extensions that enhance productivity, provide useful tools, and customize browsing experience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="projects-section">
+    <div class="container">
+      <h2 class="section-title animate-slide-up">Sample Projects</h2>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="web">Web</button>
+        <button class="filter-btn" data-filter="mobile">Mobile</button>
+        <button class="filter-btn" data-filter="automation">Automation</button>
+        <button class="filter-btn" data-filter="extension">Extensions</button>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Admin Panel Dashboard</h3>
+          <p>A comprehensive admin dashboard with user management, analytics, and reporting features.</p>
+          <div class="project-links">
+            <a href="https://adminpaneldash.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Student Dashboard</h3>
+          <p>A student management system with course tracking, grades, and progress monitoring.</p>
+          <div class="project-links">
+            <a href="https://studentdashsam.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Landing Page</h3>
+          <p>A modern, responsive landing page template with call-to-action sections and smooth animations.</p>
+          <div class="project-links">
+            <a href="https://landingpagesam1210.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Currency Converter</h3>
+          <p>A responsive web app for real-time currency conversion with favorite pairs and exchange rate history.</p>
+          <div class="project-links">
+            <a href="https://currencyconc.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Tic Tac Toe Game</h3>
+          <p>A classic game with AI opponent and score tracking.</p>
+          <div class="project-links">
+            <a href="https://tictacoo.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+        <div class="project-card animate-fade-in" data-category="web">
+          <h3>Photo Gallery Lightbox</h3>
+          <p>An elegant image gallery with lightbox functionality and smooth transitions.</p>
+          <div class="project-links">
+            <a href="https://photolightbox.netlify.app" target="_blank">Live Demo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <h2 class="section-title animate-slide-up">Get In Touch</h2>
+      <div class="contact-content">
+        <div class="contact-info">
+          <h3>Contact Information</h3>
+          <div class="contact-item">
+            <span class="contact-icon">📧</span>
+            <span>samuelmajasan6@gmail.com</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">📱</span>
+            <span>+234 706 956 8320 (WhatsApp)</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">💬</span>
+            <span>@Welost5k (Telegram)</span>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">💼</span>
+            <span>Available for projects</span>
+          </div>
+        </div>
+        <form id="contact-form" class="animate-fade-in">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <textarea name="message" placeholder="Your Message" required></textarea>
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Samuel. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://github.com/Kuro-sam1210" target="_blank">GitHub</a>
+        <a href="mailto:samuelmajasan6@gmail.com">Email</a>
+        <a href="https://wa.me/2347069568320">WhatsApp</a>
+        <a href="https://t.me/Welost5k">Telegram</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
