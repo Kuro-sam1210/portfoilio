@@ -1,0 +1,3 @@
+C:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp/build/CMakeFiles/LiveWallpaperClone.dir
+C:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp/build/CMakeFiles/ZERO_CHECK.dir

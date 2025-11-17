@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Wallpaper Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Live Wallpaper Manager</h1>
+        <nav>
+            <button id="home-btn">Home</button>
+            <button id="downloads-btn">Downloads</button>
+            <button id="instructions-btn">Instructions</button>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section id="home-section">
+            <div class="file-picker-container">
+                <button id="select-file-btn">Select GIF/Video File</button>
+                <div id="file-info"></div>
+            </div>
+
+            <div class="preview-container">
+                <h2>Preview</h2>
+                <div id="preview-area"></div>
+                <button id="set-wallpaper-btn" disabled>Set as Wallpaper</button>
+            </div>
+
+            <div class="categories">
+                <h2>Categories</h2>
+                <div id="category-buttons"></div>
+            </div>
+
+            <div class="wallpaper-grid" id="wallpaper-grid"></div>
+        </section>
+
+        <section id="downloads-section" class="hidden">
+            <h2>Download Manager</h2>
+            <div id="download-list"></div>
+        </section>
+
+        <section id="instructions-section" class="hidden">
+            <h2>Setup Instructions</h2>
+            <div class="instruction-tabs">
+                <button class="tab-btn active" data-tab="pc">PC Setup</button>
+                <button class="tab-btn" data-tab="mobile">Mobile Setup</button>
+            </div>
+            <div id="instruction-content"></div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

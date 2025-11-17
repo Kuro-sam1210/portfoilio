@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Live Wallpaper</string>
+    <string name="wallpaper_description">Custom Live Wallpaper</string>
+    <string name="select_file">Select GIF/Video</string>
+    <string name="preview">Preview</string>
+    <string name="set_wallpaper">Set as Wallpaper</string>
+    <string name="no_file_selected">No file selected</string>
+</resources>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallpaper</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+        }
+
+        #media {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <video id="media" autoplay loop muted></video>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('set-wallpaper', (event, filePath) => {
+            const media = document.getElementById('media');
+            const extension = filePath.split('.').pop().toLowerCase();
+
+            if (extension === 'gif') {
+                // For GIFs, we need to handle them differently since video element doesn't support GIFs directly
+                // We'll use an img element instead
+                const img = document.createElement('img');
+                img.id = 'media';
+                img.src = `file://${filePath}`;
+                img.style.width = '100vw';
+                img.style.height = '100vh';
+                img.style.objectFit = 'cover';
+                document.body.replaceChild(img, media);
+            } else {
+                // For videos
+                media.src = `file://${filePath}`;
+                media.play();
+            }
+        });
+    </script>
+</body>
+</html>

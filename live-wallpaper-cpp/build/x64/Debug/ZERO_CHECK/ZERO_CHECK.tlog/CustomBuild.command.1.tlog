@@ -1,0 +1,10 @@
+^C:\USERS\SAMUEL\DOCUMENTS\PORTFOILIO\LIVE-WALLPAPER-CPP\BUILD\CMAKEFILES\CE2144927C4D9C3E5074865D4E9FF776\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp -BC:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/samuel/Documents/portfoilio/live-wallpaper-cpp/build/LiveWallpaperClone.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
