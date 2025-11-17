@@ -10,7 +10,7 @@ const Users = lazy(() => import('./pages/Users'));
 export const routes = [
   {
     path: '/',
-    element: <HomePage />,
+    element: <Navigate to="/user" replace />,
     name: 'Home',
     showInNav: true,
     protected: false,

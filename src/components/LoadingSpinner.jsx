@@ -44,7 +44,7 @@ export default function LoadingSpinner() {
           {/* Company Name */}
           <h1 className="text-3xl font-bold text-white mb-2">
             <span className="bg-gradient-to-r from-[#2563eb] via-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent">
-              HighScore Tech
+              Build with Sam
             </span>
           </h1>
           <p className="text-[#e2e8f0] text-sm">Loading your experience...</p>

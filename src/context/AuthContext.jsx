@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import Cookies from 'js-cookie';
-import api from '../api/axios';
 import { coursesData } from '../data/coursesData'
 
 export const AuthContext = createContext();
@@ -140,25 +139,14 @@ export const AuthProvider = ({ children }) => {
 
   const fetchstudentData = async () => {
     try {
-      const token = Cookies.get('token'); 
-      if (!token) {
-        setstudentData(null);
-        setAppLoad(false);
-        return;
-      }
-      const response = await api.get('/auth/get-student')
-      if (response.success) {
-        setstudentData(response.data);
-      } else {
-          setstudentData(null);
-      }
-      } catch (error) {
-        console.error('Failed to fetch admin data:', error);
-        setstudentData(null);
-      } finally {
-        setAppLoad(false);
-      }
-    };
+      // Use dummy data instead of API
+      setAppLoad(false);
+    } catch (error) {
+      console.error('Failed to fetch admin data:', error);
+      setstudentData(null);
+      setAppLoad(false);
+    }
+  };
 
     useEffect(() => {
         fetchstudentData();

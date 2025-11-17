@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import api from '../api/axios';
 import { toast } from 'sonner';
 
 
@@ -13,90 +12,56 @@ export default function Users() {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await api.get('auth/get-all-students');
-      
-      const responseData = response.data || response;
-      let studentsData = [];
+      // Use dummy data instead of API
+      const dummyStudents = [
+        {
+          id: 'ST20250001',
+          name: 'John Doe',
+          email: 'john@example.com',
+          registrationDate: '2024-01-10',
+          course: 'Next.js Full-Stack Development',
+          status: 'active',
+          paymentStatus: 'current',
+          phoneNumber: '08012345678',
+          city: 'Lagos',
+          state: 'LA'
+        },
+        {
+          id: 'ST20250002',
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+          registrationDate: '2024-02-15',
+          course: 'React Development',
+          status: 'active',
+          paymentStatus: 'pending',
+          phoneNumber: '08087654321',
+          city: 'Abuja',
+          state: 'FC'
+        },
+        {
+          id: 'ST20250003',
+          name: 'Bob Wilson',
+          email: 'bob@example.com',
+          registrationDate: '2024-03-20',
+          course: 'Python Development',
+          status: 'inactive',
+          paymentStatus: 'overdue',
+          phoneNumber: '08055555555',
+          city: 'Port Harcourt',
+          state: 'RS'
+        }
+      ];
 
-      if (responseData.allUsers && Array.isArray(responseData.allUsers)) {
-        studentsData = responseData.allUsers;
-      } else if (Array.isArray(responseData)) {
-        studentsData = responseData;
-      } else if (Array.isArray(responseData.users)) {
-        studentsData = responseData.users;
-      } else if (responseData.user && Array.isArray(responseData.user)) {
-        studentsData = responseData.user;
-      } else if (responseData.data && Array.isArray(responseData.data)) {
-        studentsData = responseData.data;
-      }
-      
-
-      const mappedStudents = studentsData.map(student => {
-        const studentInfo = student;
-        
-        return {
-          id: studentInfo.studentId || studentInfo._id || studentInfo.id,
-          name: studentInfo.fullName || 
-                `${studentInfo.firstName || ''} ${studentInfo.lastName || ''}`.trim() || 'N/A',
-          email: studentInfo.email || 'N/A',
-          registrationDate: studentInfo.registrationDate ? 
-            new Date(studentInfo.registrationDate).toLocaleDateString() : 'N/A',
-          course: typeof studentInfo.course === 'object' && studentInfo.course?.courseName
-                 ? studentInfo.course.courseName
-                 : studentInfo.selectedCourse || 'N/A',
-          status: studentInfo.isActive ? 'active' : 'inactive',
-          paymentStatus: studentInfo.paymentStatus || 'pending',
-          progress: typeof studentInfo.progress === 'object' ? studentInfo.progress : {},
-          phoneNumber: studentInfo.phoneNumber || 'N/A',
-          city: studentInfo.city || 'N/A',
-          state: studentInfo.state || 'N/A',
-          age: studentInfo.age || 'N/A',
-          gender: studentInfo.gender || 'N/A',
-          learningMode: studentInfo.learningMode || 'N/A',
-          hasLaptop: studentInfo.hasLaptop || 'N/A',
-          laptopModel: studentInfo.laptopModel || 'N/A'
-        };
-      });
-
-      setStudents(mappedStudents);
+      setStudents(dummyStudents);
       if (!toastShownRef.current) {
-        toast.success(`Successfully loaded ${mappedStudents.length} students`);
+        toast.success(`Successfully loaded ${dummyStudents.length} students`);
         toastShownRef.current = true;
       }
     } catch (err) {
       console.error('Error fetching students:', err);
       if (!toastShownRef.current) {
-        toast.error(err.response?.data?.message || 'Failed to fetch students');
+        toast.error('Failed to fetch students');
         toastShownRef.current = true;
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        setStudents([
-          {
-            id: 'ST20250001',
-            name: 'John Doe',
-            email: 'john@example.com',
-            registrationDate: '2024-01-10',
-            course: 'Next.js Full-Stack Development',
-            status: 'active',
-            paymentStatus: 'current',
-            phoneNumber: '08012345678',
-            city: 'Lagos',
-            state: 'LA'
-          },
-          {
-            id: 'ST20250002',
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            registrationDate: '2024-02-15',
-            course: 'React Development',
-            status: 'active',
-            paymentStatus: 'pending',
-            phoneNumber: '08087654321',
-            city: 'Abuja',
-            state: 'FC'
-          }
-        ]);
       }
     } finally {
       setLoading(false);

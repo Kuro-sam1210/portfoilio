@@ -12,7 +12,7 @@ export default function SimpleLoader() {
         
         {/* Company name */}
         <h2 className="text-xl font-semibold bg-gradient-to-r from-[#2563eb] via-[#06b6d4] to-[#7c3aed] bg-clip-text text-transparent mb-2">
-          HighScore Tech
+          Build with Sam
         </h2>
         
         {/* Loading dots */}

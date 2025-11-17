@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../api/axios';
 import { toast } from 'sonner';
 
 export default function UserID() {
@@ -27,21 +26,18 @@ export default function UserID() {
 
     setLoading(true);
     try {
-      const response = await api.get(`auth/get-student-by-id/${studentId}`);
-      const userData = response.data?.user || response.data || response.user || response;
-
-      const mappedData = {
-        name: userData.fullName || `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
-        registrationDate: userData.registrationDate ? new Date(userData.registrationDate).toISOString().split('T')[0] : '',
-        courseStartDate: userData.courseStartDate ? new Date(userData.courseStartDate).toISOString().split('T')[0] : '',
-        expectedCompletion: userData.courseEndDate ? new Date(userData.courseEndDate).toISOString().split('T')[0] : '',
-        modulesCompleted: userData.progress?.modulesCompleted || 0,
-        averageGrade: userData.progress?.averageGrade || 0,
-        assignmentsCompleted: userData.progress?.assignmentsCompleted || 0,
-        attendance: userData.attendance || 0,
-        payments: userData.paymentStatus === 'current' ? 100 : 0,
-        currentModule: userData.progress?.currentModule || 1,
-        totalModules: userData.progress?.totalModules || 4,
+      // Use dummy data instead of API
+      const dummyData = {
+        name: studentId === 'ST20250001' ? 'John Doe' : studentId === 'ST20250002' ? 'Jane Smith' : 'Bob Wilson',
+        registrationDate: '2024-01-10',
+        courseStartDate: '2024-02-01',
+        expectedCompletion: '2024-12-01',
+        modulesCompleted: 5,
+        averageGrade: 85,
+        assignmentsCompleted: 12,
+        attendance: 95,
+        payments: 75,
+        currentModule: 1,
         modules: [
           { id: 1, title: 'Module 1: Fundamentals' },
           { id: 2, title: 'Module 2: Intermediate Concepts' },
@@ -50,33 +46,13 @@ export default function UserID() {
         ]
       };
 
-      setStudentData(mappedData);
+      setStudentData(dummyData);
       if (!toastShownRef.current) {
         toast.success('Student data loaded successfully');
         toastShownRef.current = true;
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to fetch student data');
-      if (process.env.NODE_ENV === 'development') {
-        setStudentData({
-          name: 'John Doe',
-          registrationDate: '2024-01-10',
-          courseStartDate: '2024-02-01',
-          expectedCompletion: '2024-12-01',
-          modulesCompleted: 5,
-          averageGrade: 85,
-          assignmentsCompleted: 12,
-          attendance: 95,
-          payments: 75,
-          currentModule: 1,
-          modules: [
-            { id: 1, title: 'Module 1: Fundamentals' },
-            { id: 2, title: 'Module 2: Intermediate Concepts' },
-            { id: 3, title: 'Module 3: Advanced Topics' },
-            { id: 4, title: 'Module 4: Final Project' }
-          ]
-        });
-      }
+      toast.error('Failed to fetch student data');
     } finally {
       setLoading(false);
     }
@@ -85,10 +61,11 @@ export default function UserID() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.patch(`auth/update-student-current-module/${studentId}`, { currentModule: studentData.currentModule });
+      // Simulate saving
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
       toast.success('Changes saved successfully!');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to save changes');
+      toast.error('Failed to save changes');
     } finally {
       setSaving(false);
     }
